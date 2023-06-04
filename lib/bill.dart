@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lab/lab.dart';
-// import 'package:http/http.dart';
-// import 'clouditem.dart';
+import 'package:lab/verify.dart';
 import 'ds/bill_ds.dart';
-// import 'cart.dart';
-import 'homepage.dart';
+import 'package:lab/HOME/homepage.dart';
+import 'payment.dart';
+import 'paymentconfirm.dart';
+import 'bill_functions.dart';
 
 class billpage extends StatefulWidget {
-  // const billpage({super.key});
-  // final String NameController;
-  // final TestPage transModel;
-  final String transModel;
-  billpage({required this.transModel});
+  final String uid;
+  final String patientname;
+  billpage({required this.uid, required this.patientname});
 
   @override
   _billpageState createState() => _billpageState();
@@ -23,18 +22,6 @@ class billpage extends StatefulWidget {
 
 class _billpageState extends State<billpage> {
   final controller = TextEditingController();
-  // late String username = widget.transModel;
-  // late String username;
-  // billpage() {
-  //   username = widget.transModel;
-  // }
-  // TranslatorModel _translatorModel ;
-  // late String username = widget.NameController;
-
-  // @override
-  // void initState() {
-  //   username = widget.NameController;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +97,8 @@ class _billpageState extends State<billpage> {
                       Container(
                         child: Table(
                           defaultColumnWidth: FixedColumnWidth(115.0),
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
                           border: TableBorder.all(
                               color: Colors.black,
                               style: BorderStyle.solid,
@@ -175,38 +164,19 @@ class _billpageState extends State<billpage> {
                       Container(
                         height: 50,
                         color: Color.fromARGB(255, 251, 251, 251),
-                        // controller: controller,
-                        child: StreamBuilder<List<test>>(
-                            stream: readUsers(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Text(
-                                    "Something went Wrong ${snapshot.error}");
-                              } else if (snapshot.hasData) {
-                                final users = snapshot.data!;
-                                // return ListView(
-                                // shrinkWrap: true,
-                                // children: users.map(buildtotal).toList());
-                                return Text("data found");
-                              } else {
-                                // return Text(" data not found");
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            }),
-                      ),
-                      Container(
-                        child: Text("total"),
-                        // child: ListView(shrinkWrap: true,
-                        //     // scrollDirection: Axis.horizontal,
-                        //     children: <Widget>[
-                        //   ListTile(
-                        //     title: Text('        Total 10000',
-                        //         style: TextStyle(
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.bold)),
-                        //   ),
-                        // ])
+                        child: FutureBuilder(
+                          future: getTotal(widget.patientname, "pt665694"),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text(
+                                  "Something went wrong: ${snapshot.error}");
+                            } else if (snapshot.hasData) {
+                              return Text("Total : ${snapshot.data}");
+                            } else {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -245,8 +215,11 @@ class _billpageState extends State<billpage> {
           padding: EdgeInsets.all(8.0),
           child: ElevatedButton(
             onPressed: () {
-              getDETAIL();
-              // getTotal();
+              // Navigator.of(context).push(MaterialPageRoute(
+              //     builder: (context) => PaymentConfirmedScreen()));
+
+              afterPayment(widget.patientname, "pt230288988898");
+              getTotal(widget.patientname, "pt230288988898");
             },
             // color: Color.fromARGB(255, 97, 217, 27),
             // textColor: Colors.white,
@@ -268,7 +241,6 @@ class _billpageState extends State<billpage> {
             children: <Widget>[
               Expanded(
                   child: Container(
-                // padding: EdgeInsets.only(bottom: 8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,9 +350,9 @@ class _billpageState extends State<billpage> {
       );
 
   Stream<List<Products>> readAddress() => FirebaseFirestore.instance
-      .collection('user')
-      .doc("jaiswal")
-      .collection(widget.transModel)
+      .collection('Customers')
+      .doc(widget.uid)
+      .collection(widget.patientname)
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => Products.fromJson(doc.data())).toList());
@@ -431,66 +403,10 @@ class _billpageState extends State<billpage> {
                               TableRow(children: [
                                 Column(children: [Text(user.name.toString())]),
                                 Column(children: [Text(user.rate.toString())]),
-                                Column(children: [Text('5*')]),
+                                Column(children: [Text('5')]),
                               ]),
                             ],
                           ),
-                          // child: Row(children: <Widget>[
-                          //   Container(
-                          //     child: Align(
-                          //         alignment: Alignment.centerRight,
-                          //         child: SizedBox(
-                          //           height: 20,
-                          //           width: 40,
-                          //         )),
-                          //   ),
-                          //   Container(
-                          //     child: Align(
-                          //       alignment: Alignment.centerRight,
-                          //       child: Text(
-                          //         user.name.toString(),
-                          //         style: TextStyle(
-                          //             fontSize: 16,
-                          //             fontWeight: FontWeight.bold),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   Container(
-                          //     child: Align(
-                          //         alignment: Alignment.centerRight,
-                          //         child: SizedBox(
-                          //           height: 20,
-                          //           width: 30,
-                          //         )),
-                          //   ),
-                          //   Container(
-                          //     child: Align(
-                          //       alignment: Alignment.centerLeft,
-                          //       child: Text(
-                          //         user.rate.toString(),
-                          //         style: TextStyle(
-                          //             fontSize: 16,
-                          //             fontWeight: FontWeight.bold),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   Container(
-                          //     child: Align(
-                          //         alignment: Alignment.centerRight,
-                          //         child: SizedBox(
-                          //           height: 20,
-                          //           width: 20,
-                          //         )),
-                          //   ),
-                          //   Container(
-                          //     child: Align(
-                          //         alignment: Alignment.centerRight,
-                          //         child: SizedBox(
-                          //           height: 20,
-                          //           width: 20,
-                          //         )),
-                          //   ),
-                          // ])
                         ),
                       ),
                     ),
@@ -503,9 +419,9 @@ class _billpageState extends State<billpage> {
       );
 
   Stream<List<test>> readUsers() => FirebaseFirestore.instance
-      .collection('user')
-      .doc("jaiswal")
-      .collection(widget.transModel)
+      .collection('Customers')
+      .doc(widget.uid)
+      .collection(widget.patientname)
       .doc("detail")
       .collection("test")
       //.where('name', isEqualTo: "PARACETAMOL")
@@ -569,133 +485,4 @@ class _billpageState extends State<billpage> {
   // -----------------total card end------------------------
 
   //-------------------------------------update to admin---
-
-  late CollectionReference _collectionRef = FirebaseFirestore.instance
-      .collection('user')
-      .doc("jaiswal")
-      .collection(widget.transModel)
-      .doc("detail")
-      .collection("test");
-  getDETAIL() async {
-    // Get docs from collection reference
-    QuerySnapshot querySnapshot = await _collectionRef.get();
-    // Get data from docs and convert map to List
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-    var z = allData;
-    print(allData);
-    var data = new List.filled(allData.length, "a");
-    for (var i = 0; i < z.length; i++) {
-      data[i] = allData[i].toString();
-    }
-    var data1 = new List.filled(allData.length, []);
-    for (var i = 0; i < z.length; i++) {
-      data[i] = data[i].substring(1, data[i].length - 1);
-      var j = data[i].split(",");
-      // print(j);
-      data1[i] = j;
-      data1[i].sort();
-      // print(data1[i]);
-    }
-    // print(data[0][1]);
-    // print(data1);
-    print("gautam jasiwal");
-    print(data1);
-
-    for (var i = 0; i < z.length; i++) {
-      // print(data1[i][5]);
-      // print(data1[i][6].substring(
-      // 8,
-      // ));
-
-      var a = {
-        "id": data1[i][0].substring(
-          5,
-        ),
-        "name": data1[i][1].substring(
-          7,
-        ),
-        "rate": int.parse(data1[i][2].substring(
-          6,
-        )),
-      };
-      print("a");
-      print(a);
-
-      FirebaseFirestore.instance
-          .collection('bill')
-          .doc("JAISWAL")
-          .collection("order")
-          .doc(widget.transModel)
-          .collection("BILL")
-          .doc("${a['id']}")
-          .set(a);
-    }
-
-    var b = {'name': widget.transModel};
-    FirebaseFirestore.instance
-        .collection('bill')
-        .doc("JAISWAL")
-        .collection("order")
-        .doc(widget.transModel)
-        .set(b);
-
-    print("all done");
-
-    // return allData;
-    // var z = allData[0];
-    // var y = z.toString();
-    // y = y.substring(1, y.length - 1);
-    // print(y);
-    // print(y.runtimeType);
-    // var j = y.split(",");
-    // print(j[1]);
-  }
-
-  getid() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('lab').get();
-    List docs = snapshot.docs;
-    List product = [];
-    docs.forEach((doc) {
-      print(doc.id);
-      product.add(doc.id);
-    });
-    print(product);
-    var document = await FirebaseFirestore.instance
-        .collection('COLLECTION_NAME')
-        .doc('TESTID1');
-// document.get() => then(function(document) {
-//     print(document("name"));
-// });
-    return product;
-  }
-
-  getTotal() async {
-    QuerySnapshot querySnapshot = await _collectionRef.get();
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-    var z = allData;
-    print(allData);
-    var data = new List.filled(allData.length, "a");
-    for (var i = 0; i < z.length; i++) {
-      data[i] = allData[i].toString();
-    }
-    var data1 = new List.filled(allData.length, []);
-    for (var i = 0; i < z.length; i++) {
-      data[i] = data[i].substring(1, data[i].length - 1);
-      var j = data[i].split(",");
-      data1[i] = j;
-      data1[i].sort();
-    }
-    print(data1);
-    int total = 0;
-    for (var i = 0; i < z.length; i++) {
-      var rate = int.parse(data1[i][2].substring(
-        6,
-      ));
-      total = total + rate;
-    }
-    String total1 = total.toString();
-    print(total);
-    return total1;
-  }
 }

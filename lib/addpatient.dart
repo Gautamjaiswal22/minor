@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'lab.dart';
+import 'patient_ID.dart';
 
 class addpatient extends StatefulWidget {
-  const addpatient({super.key});
+  final String uid;
+  const addpatient({required this.uid});
 
   @override
   State<addpatient> createState() => _addpatientState();
@@ -17,12 +19,13 @@ class _addpatientState extends State<addpatient> {
   String MobileController = "";
   String AddressController = "";
   String? gender; //no radio button will be selected on initial
+  var patient_id = generatePatientId();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter TextField Example'),
+        title: Text('ADD PATIENT'),
       ),
       body: SingleChildScrollView(
         child: new Container(
@@ -44,7 +47,6 @@ class _addpatientState extends State<addpatient> {
                             Padding(
                               padding: EdgeInsets.all(5),
                               child: TextField(
-                                // controller: nameController,
                                 onChanged: (text) {
                                   NameController = text;
                                 },
@@ -53,12 +55,12 @@ class _addpatientState extends State<addpatient> {
                                   labelText: 'Name',
                                   hintText: 'ENTER NAME',
                                 ),
+                                keyboardType: TextInputType.name,
                               ),
                             ),
                             Padding(
                               padding: EdgeInsets.all(5),
                               child: TextField(
-                                // controller: RATEController,
                                 onChanged: (text) {
                                   AgeController = text;
                                 },
@@ -109,7 +111,6 @@ class _addpatientState extends State<addpatient> {
                             Padding(
                               padding: EdgeInsets.all(5),
                               child: TextField(
-                                // controller: MRPController,
                                 onChanged: (text) {
                                   MobileController = text;
                                 },
@@ -124,7 +125,6 @@ class _addpatientState extends State<addpatient> {
                             Padding(
                               padding: EdgeInsets.all(5),
                               child: TextField(
-                                // controller: MIDController,
                                 onChanged: (text) {
                                   AddressController = text;
                                 },
@@ -140,26 +140,29 @@ class _addpatientState extends State<addpatient> {
                               // color: Colors.blue,
                               child: Text('SUBMIT'),
                               onPressed: () {
-                                // List lstname = [];
-                                // for (int i = 1; i <= val.length; i++) {
-                                //   lstname.add(val.substring(0, i));
-                                // }
                                 var a = {
                                   "Mobile": MobileController,
                                   "age": AgeController,
                                   "name": NameController,
                                   "address": AddressController,
                                   "gender": gender,
+                                  "time": Timestamp.now(),
                                 };
+
                                 FirebaseFirestore.instance
-                                    .collection('user')
-                                    .doc("jaiswal")
-                                    .collection("${NameController}")
-                                    .doc("detail")
+                                    .collection('Customers')
+                                    .doc(widget.uid)
+                                    .collection("PATIENTS")
+                                    .doc(patient_id)
                                     .set(a);
+
+                                print(widget.uid);
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => TestPage(
-                                        NameController: NameController)));
+                                          uid: widget.uid,
+                                          patientname: NameController,
+                                          Patient_ID: patient_id,
+                                        )));
                               },
                             )
                           ],

@@ -1,20 +1,18 @@
 import 'dart:ffi';
 
 class Products {
-  bool box;
-  bool check;
   final String name;
   final int ratee;
   final String id;
   final int INDEX;
+  final int Mrp;
 
   Products(
-      {this.box = true,
-      required this.check,
-      required this.name,
+      {required this.name,
       required this.id,
       required this.ratee,
-      required this.INDEX});
+      required this.INDEX,
+      required this.Mrp});
 
   // Map<String, dynamic> toJson() => {
   //       'check': check,
@@ -23,8 +21,8 @@ class Products {
   //     };
   static Products fromJson(Map<String, dynamic> json) => Products(
       name: json['name'],
-      check: json['check'],
       ratee: json['rate'],
       id: json['id'],
-      INDEX: json["NO"]);
+      INDEX: json["NO"],
+      Mrp: json["Mrp"]);
 }

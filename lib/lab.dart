@@ -1,32 +1,52 @@
-// // main.dart
 import 'package:flutter/material.dart';
-import 'labitem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'bill.dart';
+import 'BILL/bill_main.dart';
+import 'labitem.dart';
 
 class TestPage extends StatefulWidget {
-  final String NameController;
+  final String uid;
+  final String patientname;
+  final String Patient_ID;
 
   // receive data from the FirstScreen as a parameter
-  // TestPage({Key key, @required this.text}) : super(key: key);
-  const TestPage({super.key, required this.NameController});
+  const TestPage({
+    required this.uid,
+    required this.patientname,
+    required this.Patient_ID,
+  });
 
   @override
   State<TestPage> createState() => _TestPageState();
 }
 
 class _TestPageState extends State<TestPage> {
-  // final controller = TextEditingController();
   bool valuefirst = false;
   var a = [false, false, false, false, false, false, false, false, false];
   int i = 0;
+  @override
+  void initState() {
+    super.initState();
+    for (var j = 0; j < 1000; j++) {
+      a.add(false);
+    }
+  }
+
+  var query = "  ";
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("Available Test "),
-        ),
+            title: Card(
+                // color: Colors.red,
+                child: TextField(
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search), hintText: "select test..."),
+          onChanged: (val) {
+            setState(() {
+              query = val;
+            });
+          },
+        ))),
         body: StreamBuilder<List<Products>>(
             stream: readUsers(),
             builder: (
@@ -49,8 +69,11 @@ class _TestPageState extends State<TestPage> {
           child: ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      billpage(transModel: widget.NameController)));
+                  builder: (context) => bill_mainpage(
+                        uid: widget.uid,
+                        patientname: widget.patientname,
+                        Patient_ID: widget.Patient_ID,
+                      )));
             },
             child: Text('NEXT'),
           ),
@@ -58,7 +81,6 @@ class _TestPageState extends State<TestPage> {
       );
 
   Widget buildUser(Products user) => Card(
-        // var val=10;
         elevation: 5,
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Container(
@@ -68,115 +90,90 @@ class _TestPageState extends State<TestPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                  child: Container(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                user.name.toString(),
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                user.ratee.toString(),
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                user.ratee.toString(),
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Checkbox(
-                                checkColor: Colors.greenAccent,
-                                activeColor: Colors.red,
-                                value: a[user.INDEX],
-                                onChanged: (bool? value) => {
-                                  setState(() {
-                                    print("chnaged");
+                flex: 1,
+                child: Checkbox(
+                  checkColor: Colors.greenAccent,
+                  activeColor: Colors.red,
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  value: a[user.INDEX],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      print("changed");
+                      print(this.a[i]);
+                      this.a[user.INDEX] = value!;
+                      print(this.a[user.INDEX]);
+                      print(user.name);
 
-                                    print(this.a[i]);
-                                    this.a[user.INDEX] = value!;
-                                    print(this.a[user.INDEX]);
-                                    // i++;
-                                    // valuefirst = value!;
-                                    // user.box = valuefirst;
-                                    // final docuser = FirebaseFirestore.instance
-                                    //     .collection('lab')
-                                    //     .doc('${user.id}');
-                                    // docuser.update({
-                                    //   'check': value,
-                                    // });
-                                    var a = {
-                                      "id": user.id,
-                                      "name": user.name,
-                                      "rate": user.ratee
-                                    };
-                                    // print(widget.NameController);
-                                    if (value == true) {
-                                      FirebaseFirestore.instance
-                                          .collection('user')
-                                          .doc("jaiswal")
-                                          .collection(widget.NameController)
-                                          .doc("detail")
-                                          .collection("test")
-                                          .doc('${user.id}')
-                                          .set(a);
-                                    } else {
-                                      FirebaseFirestore.instance
-                                          .collection('user')
-                                          .doc("jaiswal")
-                                          .collection(widget.NameController)
-                                          .doc("detail")
-                                          .collection("test")
-                                          .doc('${user.id}')
-                                          .delete();
-                                    }
-                                    print(
-                                        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                                    // print(user.box);
-                                    // print(readUsers());
-                                    // this.valuefirst = false;
-                                    // FirebaseFirestore.instance
-                                    //     .collection('user')
-                                    //     .doc("jaiswal")
-                                    //     .collection("patient1")
-                                    //     .doc("detail")
-                                    //     .collection("test")
-                                    //     .doc('${user.id}')
-                                    //     .delete();
-                                  }),
-                                },
-                              ),
-                            ),
-                          ])),
-                    ),
-                  ],
+                      var a = {
+                        "id": user.id,
+                        "name": user.name,
+                        "rate": user.ratee
+                      };
+
+                      if (value == true) {
+                        FirebaseFirestore.instance
+                            .collection('Customers')
+                            .doc(widget.uid)
+                            .collection("PATIENTS")
+                            .doc(widget.Patient_ID)
+                            .collection("test")
+                            .doc('${user.id}')
+                            .set(a);
+                      } else {
+                        FirebaseFirestore.instance
+                            .collection('Customers')
+                            .doc(widget.uid)
+                            .collection("PATIENTS")
+                            .doc(widget.Patient_ID)
+                            .collection("test")
+                            .doc('${user.id}')
+                            .delete();
+                      }
+                    });
+                  },
                 ),
-              ))
+              ),
+              Expanded(
+                flex: 3,
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name.toString(),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Rate: ${user.ratee}",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            "MRP: ${user.Mrp}",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       );
 
-  Stream<List<Products>> readUsers() =>
-      FirebaseFirestore.instance.collection("lab").snapshots().map((snapshot) =>
+  Stream<List<Products>> readUsers() => FirebaseFirestore.instance
+      .collection("lab")
+      // .where("name",
+      //     isGreaterThanOrEqualTo: query, isLessThan: query + '\uf8ff')
+      .snapshots()
+      .map((snapshot) =>
           snapshot.docs.map((doc) => Products.fromJson(doc.data())).toList());
 }

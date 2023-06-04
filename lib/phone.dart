@@ -16,10 +16,8 @@ class _MyPhoneState extends State<MyPhone> {
 
   @override
   void initState() {
-    // TODO: implement initState
     countryController.text = "+91";
     super.initState();
-    // Center(child: CircularProgressIndicator());
   }
 
   void waitindicator() {
@@ -31,6 +29,7 @@ class _MyPhoneState extends State<MyPhone> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Color.fromARGB(205, 70, 245, 245),
       body: Container(
         margin: EdgeInsets.only(left: 25, right: 25),
         alignment: Alignment.center,
@@ -47,23 +46,31 @@ class _MyPhoneState extends State<MyPhone> {
                 height: 25,
               ),
               Text(
-                "Phone Verification",
+                "PATHOLINK",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 10,
               ),
               Text(
-                "We need to register your phone without getting started!",
+                "Empowering all hospitals with pathology service!",
                 style: TextStyle(
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
+                height: 10,
+              ),
+              Text(
+                "LOGIN NOW",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
                 height: 30,
               ),
               Container(
+                // color: Color.fromARGB(100, 100, 100, 100),
                 height: 55,
                 decoration: BoxDecoration(
                     border: Border.all(width: 1, color: Colors.grey),
@@ -103,7 +110,7 @@ class _MyPhoneState extends State<MyPhone> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               SizedBox(
@@ -117,32 +124,30 @@ class _MyPhoneState extends State<MyPhone> {
                     onPressed: () async {
                       print('${countryController.text + ' ' + phone}');
                       waitindicator();
-                      Center(child: CircularProgressIndicator());
+                      const Center(child: CircularProgressIndicator());
 
                       await FirebaseAuth.instance.verifyPhoneNumber(
-                        phoneNumber: '${countryController.text + phone}',
+                        phoneNumber: countryController.text + phone,
                         verificationCompleted:
                             (PhoneAuthCredential credential) {
                           print("verfication complete ++++");
-                          Center(child: CircularProgressIndicator());
+                          const Center(child: CircularProgressIndicator());
                         },
                         verificationFailed: (FirebaseAuthException e) {
                           print("failed!!!!!!!!!!");
                         },
                         codeSent: (String verificationId, int? resendToken) {
                           MyPhone.verify = verificationId;
-                          // Navigator.pushNamed(context, 'verify');
+
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => MyVerify()));
+                              builder: (context) => const MyVerify()));
                         },
                         codeAutoRetrievalTimeout: (String verificationId) {
                           print("time out");
                         },
                       );
-
-                      // Navigator.pushNamed(context, 'verify');
                     },
-                    child: Text("Send OTP")),
+                    child: const Text("Send OTP")),
               )
             ],
           ),

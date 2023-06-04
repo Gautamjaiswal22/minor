@@ -1,30 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'phone.dart';
 import 'verify.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'lab.dart';
-import 'addpatient.dart';
-import 'homepage.dart';
-import 'bill.dart';
-import 'signupdetails.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lab/HOME/homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
-
-  // runApp(MaterialApp(
-  //   initialRoute: 'phone',
-  //   debugShowCheckedModeBanner: false,
-  //   routes: {
-  //     'phone': (context) => MyPhone(),
-  //     'verify': (context) => MyVerify(),
-  //     'bill': (context) => TestPage(
-  //           NameController: "BxGhpJoEC5USC503z0B9xEV1cR62",
-  //         ),
-  //   },
-  // ));
 }
 
 class MyApp extends StatefulWidget {
@@ -37,6 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var auth = FirebaseAuth.instance;
   var islogin = false;
+
   checkifLogin() async {
     auth.authStateChanges().listen((User? User) {
       if (User != null && mounted) {
@@ -44,6 +29,9 @@ class _MyAppState extends State<MyApp> {
           islogin = true;
           print('islogin');
           print(islogin);
+          print("is log in main page uid ");
+          final uid = uidData();
+          // print(uid);
         });
       }
     });
@@ -60,9 +48,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'PATHOLAB',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.red),
-      home: islogin ? MyHomePage(NameController: "NameController") : MyPhone(),
+      theme: ThemeData(
+        primarySwatch: Colors.cyan,
+      ),
+      home: islogin ? MyHomePage(uid: uidData()) : MyPhone(),
     );
   }
 }
-
